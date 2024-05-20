@@ -48,7 +48,7 @@ rotated_object = rotate_object(object1, 45)
 
 
 """
-- маштабувати об'єкт з певним коефіцієнтом;
+- маcштабувати об'єкт з певним коефіцієнтом;
 """
 def scale_object(coords, sx, sy):
     scaling_matrix = np.array([
@@ -164,3 +164,13 @@ plot_object_3d(object3d, 'Original 3D Object')
 
 # Test 3D rotation
 rotate_object_3d(object3d, 45)
+
+
+# Обертання, а потім масштабування
+rotated_first = rotate_object(object1, 45)
+scaled_after_rotation = scale_object(rotated_first, 2, 0.5)
+
+# Масштабування, а потім обертання
+scaled_first = scale_object(object1, 2, 0.5)
+rotated_after_scaling = rotate_object(scaled_first, 45)
+

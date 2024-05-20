@@ -52,9 +52,11 @@
 
 * Оскільки поворот зберігає орієнтацію, то
 
-![x](https://latex.codecogs.com/svg.latex?\color{white}detR=+1)\ (детермінант матриці повороту дорівнює одиниці).
+![x](https://latex.codecogs.com/svg.latex?\color{white}detR=+1) (детермінант матриці повороту дорівнює одиниці).
 
 * Добутком матриць повороту є матриця повороту:
+
+
 ![x](https://latex.codecogs.com/svg.latex?\color{white}(R_1R_2)^T(R_1R_2)=R_2^T(R^T_1R_1)R_2=I,) ![x](https://latex.codecogs.com/svg.latex?\color{white}det(R_1R_2)=(detR_1)(detR_2)=+1.)
 
 Три вищеперераховані властивості означають, що матриці повороту утворюють дійсну спеціальну ортогональну групу (SO(n)).

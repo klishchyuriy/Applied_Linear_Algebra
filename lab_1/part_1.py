@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+
 """
 1. Для початку потрібно створити і візуалізувати об'єкти, 
 на яких буде відображатись виконана лінійна трансформація у двовимірному просторі. 
@@ -17,14 +18,25 @@ def plot_object(coords, title='Object'):
     plt.grid(True)
     plt.show()
 
+def plot_objects(original_coords, transformed_coords, title='Object Transformation'):
+    plt.figure()
+    plt.plot(original_coords[:, 0], original_coords[:, 1], 'o-', label='Original')  # Plot original object
+    plt.plot(transformed_coords[:, 0], transformed_coords[:, 1], 'o-', label='Transformed')  # Plot transformed object
+    plt.fill(original_coords[:, 0], original_coords[:, 1], alpha=0.3)
+    plt.fill(transformed_coords[:, 0], transformed_coords[:, 1], alpha=0.3)
+    plt.gca().set_aspect('equal', adjustable='box')  # Equal scaling on both axes
+    plt.title(title)
+    plt.legend()
+    plt.grid(True)
+    plt.show()
+
 # Define two different objects
-object1 = np.array([[0, 0], [1, 2], [2, 3], [1, 4], [0, 3], [0, 0]])
-object2 = np.array([[0, 0], [0.5, 1], [1, 0.5], [1.5, 1], [2, 0], [1, -0.5], [0.5, -1], [0, -0.5], [0, 0]])
+object1 = np.array([[0, 0], [0, 1], [1, 0], [0, 0]])  # Triangle
+object2 = np.array([[-2, 0], [0, 0.5], [-0.75, 1.5], [-2, 1], [-2, 0]])  # Trapeze
 
 # Visualize the objects
-plot_object(object1, 'Object 1')
-plot_object(object2, 'Object 2')
-
+plot_object(object1, 'Object 1 (Triangle)')
+plot_object(object2, 'Object 2 (Trapeze)')
 
 """
 2. Наступним кроком потрібно реалізувати функції, 
@@ -39,12 +51,11 @@ def rotate_object(coords, angle_degrees):
     ])
     print("Rotation Matrix:\n", rotation_matrix)
     transformed_coords = np.dot(coords, rotation_matrix)
-    plot_object(transformed_coords, f'Rotated Object by {angle_degrees} degrees')
+    plot_objects(coords, transformed_coords, f'Rotated Object by {angle_degrees} degrees')
     return transformed_coords
 
 # Test rotation
 rotated_object = rotate_object(object1, 45)
-
 
 """
 - маcштабувати об'єкт з певним коефіцієнтом;
@@ -56,12 +67,11 @@ def scale_object(coords, sx, sy):
     ])
     print("Scaling Matrix:\n", scaling_matrix)
     transformed_coords = np.dot(coords, scaling_matrix)
-    plot_object(transformed_coords, f'Scaled Object by factors {sx} and {sy}')
+    plot_objects(coords, transformed_coords, f'Scaled Object by factors {sx} and {sy}')
     return transformed_coords
 
 # Test scaling
-scaled_object = scale_object(object1, 2, 0.5)
-
+scaled_object = scale_object(object1, 2, 1)
 
 """
 - віддзеркалювати об'єкт відносно певної осі;
@@ -79,12 +89,11 @@ def reflect_object(coords, axis='x'):
         ])
     print("Reflection Matrix:\n", reflection_matrix)
     transformed_coords = np.dot(coords, reflection_matrix)
-    plot_object(transformed_coords, f'Reflected Object across {axis.upper()}-axis')
+    plot_objects(coords, transformed_coords, f'Reflected Object across {axis.upper()}-axis')
     return transformed_coords
 
 # Test reflection
 reflect_object(object1, 'x')
-
 
 """
 - робити нахил певної осі координат;
@@ -100,21 +109,24 @@ def shear_object(coords, k, axis='x'):
             [1, 0],
             [k, 1]
         ])
+    else:
+        raise ValueError("Axis must be 'x' or 'y'")
     print("Shear Matrix:\n", shear_matrix)
     transformed_coords = np.dot(coords, shear_matrix)
-    plot_object(transformed_coords, f'Sheared Object along {axis.upper()}-axis')
+    plot_objects(coords, transformed_coords, f'Sheared Object along {axis.upper()}-axis')
     return transformed_coords
 
 # Test shear
 shear_object(object1, 0.5, 'x')
-
 
 """
 та універсальну функцію, що буде виконувати трансформацію 
 з переданою у функцію кастомною матрицею трансформації.
 """
 def custom_transform(coords, transformation_matrix):
-    return np.dot(coords, transformation_matrix)
+    transformed_coords = np.dot(coords, transformation_matrix)
+    plot_objects(coords, transformed_coords, 'Custom Transformed Object')
+    return transformed_coords
 
 # Test custom transformation with an example matrix
 example_matrix = np.array([
@@ -122,8 +134,6 @@ example_matrix = np.array([
     [-1, 1]
 ])
 custom_transformed_object = custom_transform(object1, example_matrix)
-plot_object(custom_transformed_object, 'Custom Transformed Object 1')
-
 
 """
 3. Поексперементувати з різними матрицями трансформації, 
@@ -163,13 +173,3 @@ plot_object_3d(object3d, 'Original 3D Object')
 
 # Test 3D rotation
 rotate_object_3d(object3d, 45)
-
-
-# Обертання, а потім масштабування
-rotated_first = rotate_object(object1, 45)
-scaled_after_rotation = scale_object(rotated_first, 2, 0.5)
-
-# Масштабування, а потім обертання
-scaled_first = scale_object(object1, 2, 0.5)
-rotated_after_scaling = rotate_object(scaled_first, 45)
-

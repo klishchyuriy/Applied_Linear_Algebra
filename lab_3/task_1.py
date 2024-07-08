@@ -1,39 +1,32 @@
 import numpy as np
 
+def my_svd(matrix):
+    eigenvalues_matrix, eigenvectors_matrix = np.linalg.eig(np.dot(matrix, matrix.T))
+    sorted_indices_matrix = np.argsort(eigenvalues_matrix)[::-1]
+    U = eigenvectors_matrix[:, sorted_indices_matrix]
 
-def my_svd(A):
-    AtA = np.dot(A.T, A)
-    AAt = np.dot(A, A.T)
+    eigenvalues_matrix_T, eigenvectors_matrix_T = np.linalg.eig(np.dot(matrix.T, matrix))
+    sorted_indices_matrix_T = np.argsort(eigenvalues_matrix_T)[::-1]
+    V = eigenvectors_matrix_T[:, sorted_indices_matrix_T]
 
-    eigenvalues_V, V = np.linalg.eig(AtA)
-    eigenvalues_U, U = np.linalg.eig(AAt)
+    singular_values = np.sqrt(np.maximum(eigenvalues_matrix_T[sorted_indices_matrix_T], 0))
+    Σ = np.zeros(matrix.shape)
+    Σ[:min(matrix.shape), :min(matrix.shape)] = np.diag(singular_values)
 
-    sorted_indices_V = np.argsort(-eigenvalues_V)
-    eigenvalues_V = eigenvalues_V[sorted_indices_V]
-    V = V[:, sorted_indices_V]
+    for i in range(len(singular_values)):
+        if singular_values[i] != 0:
+            U[:, i] = np.dot(matrix, V[:, i]) / singular_values[i]
+        else:
+            U[:, i] = np.zeros(matrix.shape[0])
 
-    sorted_indices_U = np.argsort(-eigenvalues_U)
-    eigenvalues_U = eigenvalues_U[sorted_indices_U]
-    U = U[:, sorted_indices_U]
+    return U, Σ, V.T
 
-    sigma = np.sqrt(eigenvalues_V)
+# Test with a sample matrix
+matrix = np.array([[0, 5], [1, 3], [1, 3]])
+U, Σ, Vt = my_svd(matrix)
 
-    m, n = A.shape
-    Sigma = np.zeros((m, n))
-    min_dim = min(m, n)
-    Sigma[:min_dim, :min_dim] = np.diag(sigma)
-
-    return U, Sigma, V.T
-
-
-A = np.array([[1, 2], [3, 4], [5, 6]])
-U, Sigma, VT = my_svd(A)
-
-print("U:\n", U)
-print("Sigma:\n", Sigma)
-print("V^T:\n", VT)
-
-A_reconstructed = np.dot(U, np.dot(Sigma, VT))
-
-print("Reconstructed A:\n", A_reconstructed)
-print("Original A:\n", A)
+print("U: \n", U)
+print("Σ: \n", Σ)
+print("V^T: \n", Vt)
+print("Reconstructed matrix: \n", np.dot(U, np.dot(Σ, Vt)).round(1))
+print("Original matrix: \n", matrix)
